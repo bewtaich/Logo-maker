@@ -1,6 +1,8 @@
 const inquirer = require('inquirer');
 const fs = require('fs');
+const {Square, Triangle, Circle} = require('./lib/shapes.js');
 
+//Prompts
 const questions = [
     {//Logo Text
         name:'text',
@@ -36,10 +38,21 @@ const questions = [
     }
 ]
 
+
+
+
 function init() {
     inquirer.prompt(questions)
     .then(response=>{
-    
+        const svgData = generateSVG(response);
+
+    fs.writeFile('logo.svg', svgData, (err) => {
+    if (err){
+        console.error('Error generating logo.svg', err);
+    } else {
+        console.log('Successfully generated logo.svg')
+    }
+    })
     })
 }
 

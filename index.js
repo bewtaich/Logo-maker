@@ -36,8 +36,12 @@ const questions = [
   },
 ];
 
-function generateSVG(shape) {
-    const svgData=shape.render();
+function generateSVG(shape, response) {
+    const svgData=`<svg width='300' height='200' xmlns="http://www.w3.org/2000/svg">
+    ${shape.render()}
+    <text x='150' y='125' font-size='60' text-anchor='middle' fill='${response.textColor}'>${response.text}</text>
+    </svg>
+    `;
     return svgData
 }
 
@@ -58,7 +62,7 @@ function init() {
             break;
     }
 
-    fs.writeFile("./examples/logo.svg", generateSVG(shape), (err) => {
+    fs.writeFile("./examples/logo.svg", generateSVG(shape, response), (err) => {
       if (err) {
         console.error("Error generating logo.svg", err);
       } else {

@@ -1,6 +1,8 @@
 const inquirer = require("inquirer");
 const fs = require("fs");
 const { Square, Triangle, Circle } = require("./lib/shapes.js");
+const SVG = require("./lib/svg.js");
+
 
 //Prompts
 const questions = [
@@ -19,7 +21,7 @@ const questions = [
   //Logo Text Color
   {
     name: "textColor",
-    message: "Enter a color or a hex code value for the text (ex. #00ff24)",
+    message: "Enter a color or a hex color code for the text (ex. #00ff24)",
   },
   //Logo Shape
   {
@@ -32,41 +34,43 @@ const questions = [
   {
     name: "shapeColor",
     message:
-      "Enter a color or a hex code value for the background (ex. #00ff24)",
+      "Enter a color or a hex color code for the background (ex. #00ff24)",
   },
 ];
 
-function generateSVG(shape, response) {
-    const svgData=`<svg width='300' height='200' xmlns="http://www.w3.org/2000/svg">
-    ${shape.render()}
-    <text x='150' y='125' font-size='60' text-anchor='middle' fill='${response.textColor}'>${response.text}</text>
-    </svg>
-    `;
-    return svgData
-}
 
 function init() {
   inquirer.prompt(questions).then((response) => {
-    let shape
-    const {text, textColor, shapeColor} = response;
 
-    switch (response.shape){
+    const {text, textColor, shape, shapeColor} = response;
+
+    const svg = new SVG();
+    svg.setText(text, textColor)
+
+    let shapeChoice
+    switch (shape){
         case 'Circle':
-            shape = new Circle(shapeColor, text, textColor);
+            shapeChoice = new Circle();
             break;
         case 'Square':
-            shape = new Square(shapeColor, text, textColor);
+            shapeChoice = new Square();
             break;
         case 'Triangle':
-            shape = new Triangle(shapeColor, text, textColor);
+            shapeChoice = new Triangle();
             break;
     }
 
-    fs.writeFile("./examples/logo.svg", generateSVG(shape, response), (err) => {
+    shapeChoice.setColor(shapeColor);
+
+    svg.setShape(shapeChoice);
+
+    const svgData = svg.render();
+
+    fs.writeFile("./examples/logo.svg", svgData, (err) => {
       if (err) {
-        console.error("Error generating logo.svg", err);
+        console.error("Error Generating logo.svg", err);
       } else {
-        console.log("Successfully generated logo.svg");
+        console.log("Successfully Generated logo.svg");
       }
     });
   });
